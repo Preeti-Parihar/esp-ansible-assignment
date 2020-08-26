@@ -19,7 +19,7 @@
   tasks:
   - name: clone repo
     git:
-      repo: 'https://github.com/preetimgehlot/esp-ansible-assignment'
+      repo: 'https://github.com/preetimgehlot/esp-ansible-assignment.git'
       dest: /home/{{ ansible_ssh_user }}/esp-ansible-assignment
       update: yes  # If repository is already there it will do git pull
 
