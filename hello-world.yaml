@@ -1,0 +1,35 @@
+---
+# Setting up system packages required to deploy Flask app
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install pacakges
+      apt: name={{item}} state=installed
+      with_items:
+        - tree         
+        - python-pip   
+        - python-dev  
+        - python3-pip
+        - python3-dev
+        - nginx
+
+# Installing the app by git clone the repo.
+- hosts: webservers
+  tasks:
+  - name: clone repo
+    git:
+      repo: 'ttps://github.com/Preeti-Parihar/esp-ansible-assignment.git'
+      dest: /home/{{ ansible_ssh_user }}/esp-ansible-assignment
+      update: yes  # If repository is already there it will do git pull
+
+  - name: setting up virtualenv
+    pip:
+      requirements: /home/{{ ansible_ssh_user }}/esp-ansible-assignment/requirements.txt
+      virtualenv: /home/{{ ansible_ssh_user }}/esp-ansible-assignment/venv
+      virtualenv_python: python3.5
+
+  - name: start flask server
+    shell: /home/{{ ansible_ssh_user }}/esp-ansible-assignment/venv/bin/python3 server.py
+    args:
+      chdir: "/home/{{ ansible_ssh_user }}/esp-ansible-assignment"
