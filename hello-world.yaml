@@ -1,35 +1,33 @@
 ---
 # Setting up system packages required to deploy Flask app
 - hosts: webservers
-  become: yes
-  become_method: sudo
   tasks:
-    - name: install pacakges
-      apt: name={{item}} state=installed
-      with_items:
-        - tree         
-        - python-pip   
-        - python-dev  
-        - python3-pip
-        - python3-dev
-        - nginx
+    - name: Enable the EPEL repository
+      yum:
+        name: epel-release
 
-# Installing the app by git clone the repo.
-- hosts: webservers
-  tasks:
-  - name: clone repo
-    git:
-      repo: 'https://github.com/preetimgehlot/esp-ansible-assignment.git'
-      dest: /home/{{ ansible_ssh_user }}/esp-ansible-assignment
-      update: yes  # If repository is already there it will do git pull
+    - firewalld:
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
 
-  - name: setting up virtualenv
-    pip:
-      requirements: /home/{{ ansible_ssh_user }}/esp-ansible-assignment/requirements.txt
-      virtualenv: /home/{{ ansible_ssh_user }}/esp-ansible-assignment/venv
-      virtualenv_python: python3.5
+    - name: Install pip
+      yum:
+        name: python-pip
+        state: present
 
-  - name: start flask server
-    shell: /home/{{ ansible_ssh_user }}/esp-ansible-assignment/venv/bin/python3 server.py
-    args:
-      chdir: "/home/{{ ansible_ssh_user }}/esp-ansible-assignment"
+    - name: clone repo
+      git:
+        repo: 'https://github.com/preeti13parihar/esp-ansible-assignment'
+        dest: /home/root/esp-ansible-assignment
+        update: no  # If repository is already there it will do git pull
+
+    - name: install dependencies
+      pip:
+        requirements: requirements.txt
+        chdir: /home/root/esp-ansible-assignment
+        
+    - name: start flask server
+      shell: python server.py
+      args:
+        chdir: "/home/root/esp-ansible-assignment"
