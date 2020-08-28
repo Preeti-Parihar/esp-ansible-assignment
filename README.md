@@ -17,3 +17,7 @@ Configure Ansible server on ubuntu to deploy a webserver on centos1 and centos2,
 7. $ ansible --version
 
 https://www.cyberciti.biz/faq/how-to-install-and-configure-latest-version-of-ansible-on-ubuntu-linux/
+
+## Setup SSH keys
+1. ssh-keygen -t rsa
+2. ssh-copy-id <ipaddress>
