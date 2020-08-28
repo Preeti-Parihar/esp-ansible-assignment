@@ -20,7 +20,7 @@
       git:
         repo: 'https://github.com/preeti13parihar/esp-ansible-assignment'
         dest: /home/root/esp-ansible-assignment
-        update: no  # If repository is already there it will do git pull
+        update: no 
 
     - name: install dependencies
       pip:
