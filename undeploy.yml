@@ -1,0 +1,39 @@
+---
+# Undeploy all resources
+- hosts: webservers
+  tasks:
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+
+    - name: Disabling port 8080
+      firewalld:
+        port: 8080/tcp
+        permanent: no
+        state: disabled
+
+    - name: check if git repo present
+      stat: path=/home/root/esp-ansible-assignment
+      register: is_repo_found
+
+    - name: uninstall dependencies
+      pip:
+        requirements: requirements.txt
+        chdir: /home/root/esp-ansible-assignment
+        state: absent
+      when: is_repo_found.stat.exists == true
+
+    - name: Uninstalling pip
+      yum:
+        name: python-pip
+        state: absent
+      when: "'python-pip' in ansible_facts.packages"
+
+    - name: Stopping flask-demo service
+      service:
+        name: flask-demo
+        state: stopped
+
+    - name: Removing github repo
+      shell: /bin/rm -rf /home/root/esp-ansible-assignment
+      when: is_repo_found.stat.exists == true
