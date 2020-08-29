@@ -5,11 +5,17 @@
     - name: Enable the EPEL repository
       yum:
         name: epel-release
-
-    - firewalld:
+        
+    - name: Enabling port 8080 on firewalld
+      firewalld:
         port: 8080/tcp
         permanent: yes
         state: enabled
+        
+    - name: firewalld service reloading
+      systemd:
+        name: firewalld
+        state: reloaded        
 
     - name: Install pip
       yum:
